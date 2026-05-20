@@ -8,13 +8,7 @@ from functools import cached_property
 from typing import TYPE_CHECKING, Any
 
 from ducklake_client._connection import ConnectionManager
-from ducklake_client.config import (
-    CatalogConfig,
-    CatalogInput,
-    DuckDBConfig,
-    StorageConfig,
-    StorageInput,
-)
+from ducklake_client.config import DuckDBConfig, CatalogConfig, StorageConfig
 from ducklake_client.exceptions import DuckLakeQueryError
 from ducklake_client.modules.schema import SchemaModule
 from ducklake_client.modules.snapshots import SnapshotsModule
@@ -31,14 +25,16 @@ class DuckLake:
     def __init__(
         self,
         *,
-        catalog: CatalogInput,
-        storage: StorageInput,
+        catalog: CatalogConfig,
+        storage: StorageConfig,
         alias: str = "lake",
         duckdb: DuckDBConfig | None = None,
         attach_options: Mapping[str, object] | None = None,
     ) -> None:
         if not isinstance(catalog, CatalogConfig):
-            raise TypeError("catalog must be a DuckDBCatalog, PostgresCatalog, or SqliteCatalog")
+            raise TypeError(
+                "catalog must be a DuckDBCatalog, PostgresCatalog, or SqliteCatalog"
+            )
         if not isinstance(storage, StorageConfig):
             raise TypeError("storage must be a DiskStorage or S3Storage")
 
@@ -103,7 +99,9 @@ class DuckLake:
         if row is None:
             raise DuckLakeQueryError("sql_scalar expected one row, got zero rows")
         if len(row) != 1:
-            raise DuckLakeQueryError(f"sql_scalar expected exactly one column, got {len(row)}")
+            raise DuckLakeQueryError(
+                f"sql_scalar expected exactly one column, got {len(row)}"
+            )
         return row[0]
 
     def sql_one(self, sql: str, **params: Any) -> dict[str, Any]:
