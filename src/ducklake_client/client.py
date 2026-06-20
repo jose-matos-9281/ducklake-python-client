@@ -5,7 +5,7 @@ from __future__ import annotations
 from collections.abc import Iterator, Mapping
 from contextlib import contextmanager
 from functools import cached_property
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Self
 
 from ducklake_client._connection import ConnectionManager
 from ducklake_client.config import DuckDBConfig, CatalogConfig, StorageConfig
@@ -126,7 +126,7 @@ class DuckLake:
         return dict(zip(columns, row, strict=False))
 
     @contextmanager
-    def transaction(self) -> Iterator[DuckLake]:
+    def transaction(self) -> Iterator[Self]:
         """Run a block inside a DuckDB transaction on this lake's connection."""
 
         connection = self.connection
