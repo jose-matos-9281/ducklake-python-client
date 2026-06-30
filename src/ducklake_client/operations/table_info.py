@@ -63,6 +63,10 @@ def table_info(
     )
 
 
+def _schema_table_parameters(parameters: dict[str, object]) -> dict[str, object]:
+    return {"schema": parameters["schema"], "table": parameters["table"]}
+
+
 def _require_table(
     context: OperationContext, parameters: dict[str, object]
 ) -> dict[str, Any]:
@@ -185,7 +189,7 @@ def _ducklake_metadata(
     result = optional_rows(
         context,
         template("table_info_ducklake_metadata.sql"),
-        parameters,
+        _schema_table_parameters(parameters),
         operation="table.info",
     )
     if not result:
@@ -219,7 +223,7 @@ def _partition_specs(
         for row in optional_rows(
             context,
             template("table_info_partition_specs.sql"),
-            parameters,
+            _schema_table_parameters(parameters),
             operation="table.info",
         )
     ]
@@ -240,7 +244,7 @@ def _sort_specs(
         for row in optional_rows(
             context,
             template("table_info_sort_specs.sql"),
-            parameters,
+            _schema_table_parameters(parameters),
             operation="table.info",
         )
     ]
