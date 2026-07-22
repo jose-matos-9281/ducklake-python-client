@@ -1,0 +1,77 @@
+trigger:
+  branches:
+    exclude:
+      - "*"
+  tags:
+    include:
+      - "v*"
+
+pr: none
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  pythonVersion: "3.11"
+  projectName: "Inteligencia Operacional"
+  feedName: "pagos-masivos"
+
+steps:
+  - checkout: self
+    clean: true
+    fetchDepth: 0
+
+  - task: UsePythonVersion@0
+    displayName: "Usar Python $(pythonVersion)"
+    inputs:
+      versionSpec: "$(pythonVersion)"
+      architecture: "x64"
+
+  - script: |
+      python -m pip install --upgrade pip
+      python -m pip install build twine
+    displayName: "Instalar herramientas"
+
+  - bash: |
+      TAG_VERSION="${BUILD_SOURCEBRANCHNAME#v}"
+
+      PACKAGE_VERSION=$(python - <<'PY'
+      import tomllib
+
+      with open("pyproject.toml", "rb") as file:
+          config = tomllib.load(file)
+
+      print(config["project"]["version"])
+      PY
+      )
+
+      echo "Versión del tag: $TAG_VERSION"
+      echo "Versión del paquete: $PACKAGE_VERSION"
+
+      if [ "$TAG_VERSION" != "$PACKAGE_VERSION" ]; then
+        echo "ERROR: el tag y pyproject.toml no coinciden"
+        exit 1
+      fi
+    displayName: "Validar versión del release"
+
+  - script: |
+      rm -rf dist build
+      python -m build
+      python -m twine check dist/*
+    displayName: "Construir paquete"
+
+  - task: TwineAuthenticate@1
+    displayName: "Autenticar en Azure Artifacts"
+    inputs:
+      artifactFeed: "$(projectName)/$(feedName)"
+
+  - script: |
+      python -m twine upload \
+        --repository "$(feedName)" \
+        --config-file "$(PYPIRC_PATH)" \
+        dist/*
+    displayName: "Publicar release estable"
+
+  - publish: dist
+    artifact: python-package
+    displayName: "Guardar paquete generado"
