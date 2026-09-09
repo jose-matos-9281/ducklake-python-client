@@ -1,9 +1,9 @@
 """Public DuckLake API modules."""
 
-from ducklake_client.modules.schema import SchemaModule
-from ducklake_client.modules.snapshots import SnapshotsModule
-from ducklake_client.modules.table import TableModule
-from ducklake_client.modules.view import ViewModule
+from .schema import SchemaModule
+from .snapshots import SnapshotsModule
+from .table import TableModule
+from .view import ViewModule
 
 __all__ = [
     "SchemaModule",

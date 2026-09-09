@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
-from ducklake_client.config import quote_identifier
 from ducklake_client.exceptions import DuckLakeQueryError
-from ducklake_client.modules.base import DuckLakeModule
+from ducklake_client.utils import quote_identifier
+
+from .base import DuckLakeModule
 
 
 class SnapshotsModule(DuckLakeModule):

@@ -15,7 +15,7 @@ The public API is intentionally split into a few feature modules. Use these when
 |-----|---------------|---------|
 | `lake.schema.create(name, if_not_exists=True)` | Creates a schema under the attached alias | DuckDB connection/cursor result |
 | `lake.table.create(...)` | Creates a table from `ColumnDef` values | DuckDB connection/cursor result |
-| `lake.table.create_from_csv(...)` | Creates a table from a CSV source | DuckDB connection/cursor result |
+| `lake.table.create_from_file(...)` | Creates a table from a file or URL source | DuckDB connection/cursor result |
 | `lake.table.add_column(...)` | Adds a column with optional raw `DEFAULT` SQL | DuckDB connection/cursor result |
 | `lake.table.drop_column(...)` | Drops a column | DuckDB connection/cursor result |
 | `lake.table.comment(...)` | Sets table or column comments | DuckDB connection/cursor result |

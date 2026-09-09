@@ -12,7 +12,7 @@ pool:
   vmImage: ubuntu-latest
 
 variables:
-  pythonVersion: "3.11"
+  pythonVersion: "3.12"
   projectName: "Inteligencia Operacional"
   feedName: "pagos-masivos"
 

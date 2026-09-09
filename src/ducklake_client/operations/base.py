@@ -21,37 +21,54 @@ class OperationContext(Protocol):
     def connection(self) -> duckdb.DuckDBPyConnection: ...
 
 
-def template(name: str) -> str:
-    return files("ducklake_client.templates").joinpath(name).read_text(encoding="utf-8")
+class BaseDuckLakeOperation:
+    """Base for DuckLake operations."""
 
+    def __init__(self, context: OperationContext) -> None:
+        self._context = context
 
-def rows(
-    context: OperationContext,
-    query: str,
-    parameters: dict[str, object] | None = None,
-    *,
-    operation: str,
-) -> list[dict[str, Any]]:
-    try:
-        cursor = (
-            context.connection.execute(query, parameters)
-            if parameters is not None
-            else context.connection.execute(query)
+    @property
+    def context(self) -> OperationContext:
+        return self._context
+
+    @context.setter
+    def context(self, value: OperationContext) -> None:
+        self._context = value
+
+    @staticmethod
+    def template(name: str) -> str:
+        return (
+            files("ducklake_client.templates")
+            .joinpath(name)
+            .read_text(encoding="utf-8")
         )
-        names = [str(column[0]) for column in cursor.description or []]
-        return [dict(zip(names, row, strict=False)) for row in cursor.fetchall()]
-    except Exception as exc:
-        raise DuckLakeQueryError(f"DuckLake {operation} query failed") from exc
 
+    def rows(
+        self,
+        query: str,
+        parameters: dict[str, object] | None = None,
+        *,
+        operation: str,
+    ) -> list[dict[str, Any]]:
+        try:
+            cursor = (
+                self.context.connection.execute(query, parameters)
+                if parameters is not None
+                else self.context.connection.execute(query)
+            )
+            names = [column[0] for column in cursor.description or []]
+            return [dict(zip(names, row, strict=False)) for row in cursor.fetchall()]
+        except Exception as exc:
+            raise DuckLakeQueryError(f"DuckLake {operation} query failed") from exc
 
-def optional_rows(
-    context: OperationContext,
-    query: str,
-    parameters: dict[str, object] | None = None,
-    *,
-    operation: str,
-) -> list[dict[str, Any]]:
-    try:
-        return rows(context, query, parameters, operation=operation)
-    except DuckLakeQueryError:
-        return []
+    def optional_rows(
+        self,
+        query: str,
+        parameters: dict[str, object] | None = None,
+        *,
+        operation: str,
+    ) -> list[dict[str, Any]]:
+        try:
+            return self.rows(query, parameters, operation=operation)
+        except DuckLakeQueryError:
+            return []
