@@ -5,13 +5,10 @@ from __future__ import annotations
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from ducklake_client.modules.base import DuckLakeModule
-from ducklake_client.operations.table_alter import table_add_column, table_drop_column
-from ducklake_client.operations.table_comment import table_comment
-from ducklake_client.operations.table_create import table_create, table_create_from_csv
-from ducklake_client.operations.table_info import table_info
-from ducklake_client.operations.table_list import table_list
+from ducklake_client.operations import TableOperation
 from ducklake_client.schema import ColumnDef, TableInfo, TableListing
+
+from .base import DuckLakeModule
 
 if TYPE_CHECKING:
     import duckdb
@@ -19,6 +16,11 @@ if TYPE_CHECKING:
 
 class TableModule(DuckLakeModule):
     """DuckLake table operations."""
+
+    @property
+    def ops(self) -> TableOperation:
+        """Get a TableOperation instance for table operations."""
+        return TableOperation(self)
 
     def create(
         self,
@@ -28,15 +30,12 @@ class TableModule(DuckLakeModule):
         if_not_exists: bool = True,
         **columns: ColumnDef,
     ) -> duckdb.DuckDBPyConnection:
-        return table_create(
-            self,
+        return self.ops.create(
             table_name,
-            schema_name=schema_name,
-            if_not_exists=if_not_exists,
-            **columns,
-        )
+            schema_name,
+        ).create(if_not_exists=if_not_exists, **columns)
 
-    def create_from_csv(
+    def create_from_file(
         self,
         name: str,
         source: str | Path,
@@ -44,11 +43,11 @@ class TableModule(DuckLakeModule):
         schema_name: str = "main",
         if_not_exists: bool = True,
     ) -> duckdb.DuckDBPyConnection:
-        return table_create_from_csv(
-            self,
+        return self.ops.create(
             name,
+            schema_name,
+        ).create_from_file(
             source,
-            schema_name=schema_name,
             if_not_exists=if_not_exists,
         )
 
@@ -61,12 +60,12 @@ class TableModule(DuckLakeModule):
         schema_name: str = "main",
         default_sql: str | None = None,
     ) -> duckdb.DuckDBPyConnection:
-        return table_add_column(
-            self,
+        return self.ops.alter(
             name,
+            schema_name,
+        ).add_column(
             column_name,
             column,
-            schema_name=schema_name,
             default_sql=default_sql,
         )
 
@@ -77,7 +76,10 @@ class TableModule(DuckLakeModule):
         *,
         schema_name: str = "main",
     ) -> duckdb.DuckDBPyConnection:
-        return table_drop_column(self, name, column_name, schema_name=schema_name)
+        return self.ops.alter(
+            name,
+            schema_name,
+        ).drop_column(column_name)
 
     def comment(
         self,
@@ -87,12 +89,12 @@ class TableModule(DuckLakeModule):
         column_name: str | None = None,
         schema_name: str = "main",
     ) -> duckdb.DuckDBPyConnection:
-        return table_comment(
-            self,
+        return self.ops.comment(
             name,
+            schema_name,
+        ).comment(
             comment,
             column_name=column_name,
-            schema_name=schema_name,
         )
 
     def list(
@@ -100,7 +102,7 @@ class TableModule(DuckLakeModule):
         *,
         schema_name: str | None = None,
     ) -> list[TableListing]:
-        return table_list(self, schema_name=schema_name)
+        return self.ops.list.table_list(schema_name=schema_name)
 
     def info(
         self,
@@ -110,10 +112,10 @@ class TableModule(DuckLakeModule):
         include_row_count: bool = True,
         include_snapshots: bool = True,
     ) -> TableInfo:
-        return table_info(
-            self,
+        return self.ops.info(
             name,
             schema_name=schema_name,
+        ).info(
             include_row_count=include_row_count,
             include_snapshots=include_snapshots,
         )

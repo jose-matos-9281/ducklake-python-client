@@ -5,8 +5,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any, Literal, TypeAlias, get_args
 
-from ducklake_client.config import quote_identifier
 from ducklake_client.exceptions import DuckLakeConfigError
+from ducklake_client.utils import quote_identifier
 
 ColumnDataType: TypeAlias = Literal[
     "BIGINT",

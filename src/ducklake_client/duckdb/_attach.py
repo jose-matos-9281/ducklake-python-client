@@ -4,7 +4,8 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 
-from ducklake_client.config import CatalogConfig, StorageConfig, quote_identifier, quote_literal
+from ducklake_client.ports import CatalogConfig, StorageConfig
+from ducklake_client.utils import quote_identifier, quote_literal
 
 
 def build_attach_sql(
