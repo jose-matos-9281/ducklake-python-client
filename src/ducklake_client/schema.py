@@ -37,7 +37,7 @@ type ColumnDataType = Literal[
     "VARCHAR",
 ]
 
-_COLUMN_DATA_TYPES = frozenset(get_args(ColumnDataType))
+_COLUMN_DATA_TYPES = frozenset(get_args(ColumnDataType.__value__))
 
 
 @dataclass(frozen=True)
