@@ -1,30 +1,37 @@
-"""Examples for ducklake-client."""
+"""Create and query a local DuckLake table."""
 
-import pprint
-from ducklake_client import DiskStorage, DuckDBCatalog, DuckLake
+from pathlib import Path
+from tempfile import TemporaryDirectory
+
+from ducklake_client import ColumnDef, DuckLake
+from ducklake_client.adapters import DiskStorage, DuckDBCatalog, LocalDuckDBConfig
+from ducklake_client.client import DuckLakeConfig
 
 
 def main() -> None:
-    with DuckLake(
-        catalog=DuckDBCatalog("demo.ducklake"),
-        storage=DiskStorage("demo"),
-    ) as lake:
-        with lake.transaction():
-            lake.schema.create("main")
-            lake.table.create_from_csv(
-                "nl_train_stations",
-                "https://blobs.duckdb.org/nl_stations.csv",
-            )
-            lake.table.comment("nl_train_stations", "Dutch railway stations")
-            lake.table.comment(
-                "nl_train_stations",
-                "Station ID",
-                column_name="id",
-            )
+    with TemporaryDirectory(prefix="ducklake-demo-") as directory:
+        root = Path(directory)
+        config = DuckLakeConfig(
+            catalog=DuckDBCatalog(root / "metadata.ducklake"),
+            storage=DiskStorage(root / "data"),
+            duckdb=LocalDuckDBConfig(),
+        )
 
-        # rows = lake.connection.sql("SELECT * FROM lake.main.nl_train_stations LIMIT 5").fetchall()
-        info = lake.table.info("nl_train_stations")
-        pprint.pprint(info.columns[0], indent=2)
+        with DuckLake(config) as lake:
+            lake.schema.create("main")
+            lake.table.create(
+                "payments",
+                id=ColumnDef("INTEGER", nullable=False),
+                amount=ColumnDef("DECIMAL", nullable=False),
+            )
+            lake.connection.execute(
+                "INSERT INTO lake.main.payments VALUES (?, ?), (?, ?)",
+                [1, 25.50, 2, 99.99],
+            )
+            for payment in lake.sql_dicts(
+                "SELECT id, amount FROM lake.main.payments ORDER BY id"
+            ):
+                print(payment)
 
 
 if __name__ == "__main__":

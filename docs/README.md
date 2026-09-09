@@ -7,6 +7,7 @@ This folder explains how `ducklake-client` is structured and how to use it witho
 1. Start with [Getting started](./getting-started.md).
 2. Read [Configuration](./configuration.md) to choose catalog, storage, and DuckDB settings.
 3. Use [Architecture](./architecture.md) and [Modules](./modules.md) when you need to understand internals or extend the client.
+4. Run [`demo.py`](../demo.py) for the complete local workflow.
 
 ## What is in this docs set?
 
