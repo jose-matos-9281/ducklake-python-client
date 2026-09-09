@@ -4,7 +4,7 @@ import re
 from collections.abc import Mapping
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Self, TypeAlias
+from typing import Self
 
 from ducklake_client.exceptions import DuckLakeConfigError, DuckLakeConnectionError
 from ducklake_client.utils import quote_literal
@@ -12,9 +12,9 @@ from ducklake_client.utils import quote_literal
 _SETTING_NAME = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
 
 
-DuckDBConfigValue: TypeAlias = str | bool | int | float | list[str]
-DuckDBSettingValue: TypeAlias = str | bool | int | float
-DuckDBSettings: TypeAlias = Mapping[str, DuckDBSettingValue]
+type DuckDBConfigValue = str | bool | int | float | list[str]
+type DuckDBSettingValue = str | bool | int | float
+type DuckDBSettings = Mapping[str, DuckDBSettingValue]
 
 
 @dataclass(frozen=True)
