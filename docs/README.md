@@ -1,6 +1,6 @@
-# ducklake-client docs
+# ducklake-python-client-fork docs
 
-This folder explains how `ducklake-client` is structured and how to use it without reading the whole source tree.
+This folder explains how `ducklake-python-client-fork` is structured and how to use it without reading the whole source tree.
 
 ## Quick path
 

@@ -1,11 +1,11 @@
-# ducklake-client
+# ducklake-python-client-fork
 
 Lightweight Python helpers for opening DuckLake connections through DuckDB.
 
 ## Install
 
 ```bash
-pip install ducklake-client-fork
+pip install ducklake-python-client-fork
 ```
 
 ## Quick start

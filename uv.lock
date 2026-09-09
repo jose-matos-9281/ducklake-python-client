@@ -32,7 +32,7 @@ wheels = [
 ]
 
 [[package]]
-name = "ducklake-client-fork"
+name = "ducklake-python-client-fork"
 version = "0.6.0"
 source = { editable = "." }
 dependencies = [

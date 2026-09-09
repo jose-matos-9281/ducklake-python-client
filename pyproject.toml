@@ -1,5 +1,5 @@
 [project]
-name = "ducklake-client-fork"
+name = "ducklake-python-client-fork"
 version = "0.6.0"
 description = "Lightweight wrapper over DuckDB with convenience helpers for DuckLake."
 readme = "README.md"

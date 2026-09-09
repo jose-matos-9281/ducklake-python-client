@@ -1,6 +1,6 @@
-# Getting started with ducklake-client
+# Getting started with ducklake-python-client-fork
 
-`ducklake-client` opens a DuckLake catalog through DuckDB and provides typed
+`ducklake-python-client-fork` opens a DuckLake catalog through DuckDB and provides typed
 helpers for common catalog operations.
 
 ## Quick path
